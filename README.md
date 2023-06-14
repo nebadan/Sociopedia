@@ -66,4 +66,4 @@ Sincerely,
 Nebiyu Daniel
 
 ## Contact
-email: nebaddan7@gmail.com
+email: nebadan7@gmail.com
