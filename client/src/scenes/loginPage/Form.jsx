@@ -17,8 +17,14 @@ import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
 
 const registerSchema = yup.object().shape({
-  firstName: yup.string().required("required"),
-  lastName: yup.string().required("required"),
+  firstName: yup
+    .string()
+    .matches(/^[a-zA-Z]+$/, "First Name can only contain alphabets")
+    .required("required"),
+  lastName: yup
+    .string()
+    .matches(/^[a-zA-Z]+$/, "Last Name can only contain alphabets")
+    .required("required"),
   email: yup.string().email("invalid email").required("required"),
   password: yup.string().required("required"),
   location: yup.string().required("required"),
@@ -27,8 +33,15 @@ const registerSchema = yup.object().shape({
 });
 
 const loginSchema = yup.object().shape({
-  email: yup.string().email("invalid email").required("required"),
-  password: yup.string().required("required"),
+  email: yup
+    .string()
+    .email("Invalid email")
+    .matches(/^[a-zA-Z0-9.@]+$/, "Email can only contain letters, numbers, period (.), and @ symbol")
+    .required("Required"),
+  password: yup
+    .string()
+    .matches(/^[a-zA-Z0-9\s]+$/, "Password can only contain letters, numbers, and spaces")
+    .required("Required"),
 });
 
 const initialValuesRegister = {
