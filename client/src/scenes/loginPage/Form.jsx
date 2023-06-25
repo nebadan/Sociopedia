@@ -15,6 +15,7 @@ import { useDispatch } from "react-redux";
 import { setLogin } from "state";
 import Dropzone from "react-dropzone";
 import FlexBetween from "components/FlexBetween";
+import { Alert } from "@mui/material";
 
 const registerSchema = yup.object().shape({
   firstName: yup
@@ -80,6 +81,7 @@ const Form = () => {
   const isNonMobile = useMediaQuery("(min-width:600px)");
   const isLogin = pageType === "login";
   const isRegister = pageType === "register";
+  const [wrongPassword, setWrongPassword] = useState(false);
 
   const register = async (values, onSubmitProps) => {
     // this allows us to send form info with image
@@ -113,16 +115,20 @@ const Form = () => {
     const loggedIn = await loggedInResponse.json();
     onSubmitProps.resetForm();
     if (loggedIn) {
-      dispatch(
-        setLogin({
-          user: loggedIn.user,
-          token: loggedIn.token,
-        })
-      );
-      navigate("/home");
+      if (loggedIn.msg === "Wrong password or e-mail.") { // Updated error message property
+        setWrongPassword(true);
+      } else {
+        dispatch(
+          setLogin({
+            user: loggedIn.user,
+            token: loggedIn.token,
+          })
+        );
+        navigate("/home");
+      }
     }
   };
-
+    
   const handleFormSubmit = async (values, onSubmitProps) => {
     if (isLogin) await login(values, onSubmitProps);
     if (isRegister) await register(values, onSubmitProps);
@@ -145,6 +151,11 @@ const Form = () => {
         resetForm,
       }) => (
         <form onSubmit={handleSubmit}>
+          {wrongPassword && (
+            <Alert severity="error" sx={{ marginBottom: "1rem" }}>
+              Wrong password or e-mai. Please try again.
+            </Alert>
+          )}
           <Box
             display="grid"
             gap="30px"
