@@ -25,10 +25,23 @@ const registerSchema = yup.object().shape({
     .string()
     .matches(/^[a-zA-Z]+$/, "Last Name can only contain alphabets")
     .required("required"),
-  email: yup.string().email("invalid email").required("required"),
-  password: yup.string().required("required"),
-  location: yup.string().required("required"),
-  occupation: yup.string().required("required"),
+  email: yup
+    .string()
+    .email("Email can only contain letters, numbers, period (.), and @ symbol")
+    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Email can only contain letters, numbers, period (.), and @ symbol")
+    .required("Required"),
+  password: yup
+    .string()
+    .matches(/^[a-zA-Z0-9\s]+$/, "Password can only contain letters, numbers, and spaces")
+    .required("Required"),
+    location: yup
+    .string()
+    .matches(/^[a-zA-Z0-9\s]+$/, "Location can only contain letters, spaces, and numbers")
+    .required("Required"),
+  occupation: yup
+    .string()
+    .matches(/^[a-zA-Z0-9\s]+$/, "Occupation can only contain letters, spaces, and numbers")
+    .required("Required"),
   picture: yup.string().required("required"),
 });
 
@@ -36,7 +49,7 @@ const loginSchema = yup.object().shape({
   email: yup
     .string()
     .email("Invalid email")
-    .matches(/^[a-zA-Z0-9.@]+$/, "Email can only contain letters, numbers, period (.), and @ symbol")
+    .matches(/^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/, "Invalid email")
     .required("Required"),
   password: yup
     .string()
