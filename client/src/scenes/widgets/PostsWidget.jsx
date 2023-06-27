@@ -2,6 +2,7 @@ import { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
 import PostWidget from "./PostWidget";
+import DOMPurify from 'dompurify';
 
 const PostsWidget = ({ userId, isProfile = false }) => {
   const dispatch = useDispatch();
@@ -14,7 +15,8 @@ const PostsWidget = ({ userId, isProfile = false }) => {
       headers: { Authorization: `Bearer ${token}` },
     });
     const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+    const sanitizedPosts = sanitizePosts(data);
+    dispatch(setPosts({ posts: sanitizedPosts }));
   };
 
   const getUserPosts = async () => {
@@ -26,7 +28,8 @@ const PostsWidget = ({ userId, isProfile = false }) => {
       }
     );
     const data = await response.json();
-    dispatch(setPosts({ posts: data }));
+    const sanitizedPosts = sanitizePosts(data);
+    dispatch(setPosts({ posts: sanitizedPosts }));
   };
 
   useEffect(() => {
@@ -36,6 +39,15 @@ const PostsWidget = ({ userId, isProfile = false }) => {
       getPosts();
     }
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const sanitizePosts = (posts) => {
+    return posts.map((post) => {
+      const { description, comments } = post;
+      const sanitizedDescription = DOMPurify.sanitize(description);
+      const sanitizedComments = comments.map((comment) => DOMPurify.sanitize(comment));
+      return { ...post, description: sanitizedDescription, comments: sanitizedComments };
+    });
+  };
 
   return (
     <>

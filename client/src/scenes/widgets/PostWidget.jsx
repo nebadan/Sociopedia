@@ -11,6 +11,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPost } from "state";
+import DOMPurify from 'dompurify';
 
 const PostWidget = ({
   postId,
@@ -47,6 +48,10 @@ const PostWidget = ({
     dispatch(setPost({ post: updatedPost }));
   };
 
+  // Sanitize the description and comments before rendering
+  const sanitizedDescription = DOMPurify.sanitize(description);
+  const sanitizedComments = comments.map(comment => DOMPurify.sanitize(comment));
+
   return (
     <WidgetWrapper m="2rem 0">
       <Friend
@@ -56,7 +61,7 @@ const PostWidget = ({
         userPicturePath={userPicturePath}
       />
       <Typography color={main} sx={{ mt: "1rem" }}>
-        {description}
+        {sanitizedDescription}
       </Typography>
       {picturePath && (
         <img
@@ -94,7 +99,7 @@ const PostWidget = ({
       </FlexBetween>
       {isComments && (
         <Box mt="0.5rem">
-          {comments.map((comment, i) => (
+          {sanitizedComments.map((comment, i) => (
             <Box key={`${name}-${i}`}>
               <Divider />
               <Typography sx={{ color: main, m: "0.5rem 0", pl: "1rem" }}>

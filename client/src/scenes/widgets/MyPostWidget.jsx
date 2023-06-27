@@ -24,6 +24,7 @@ import WidgetWrapper from "components/WidgetWrapper";
 import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { setPosts } from "state";
+import DOMPurify from "dompurify";
 
 const MyPostWidget = ({ picturePath }) => {
   const dispatch = useDispatch();
@@ -52,9 +53,25 @@ const MyPostWidget = ({ picturePath }) => {
       body: formData,
     });
     const posts = await response.json();
-    dispatch(setPosts({ posts }));
+    const sanitizedPosts = sanitizePosts(posts);
+    dispatch(setPosts({ posts: sanitizedPosts }));
     setImage(null);
     setPost("");
+  };
+
+  const sanitizePosts = (posts) => {
+    return posts.map((post) => {
+      const { description, comments } = post;
+      const sanitizedDescription = DOMPurify.sanitize(description);
+      const sanitizedComments = comments.map((comment) =>
+        DOMPurify.sanitize(comment)
+      );
+      return {
+        ...post,
+        description: sanitizedDescription,
+        comments: sanitizedComments,
+      };
+    });
   };
 
   return (
@@ -74,12 +91,7 @@ const MyPostWidget = ({ picturePath }) => {
         />
       </FlexBetween>
       {isImage && (
-        <Box
-          border={`1px solid ${medium}`}
-          borderRadius="5px"
-          mt="1rem"
-          p="1rem"
-        >
+        <Box border={`1px solid ${medium}`} borderRadius="5px" mt="1rem" p="1rem">
           <Dropzone
             acceptedFiles=".jpg,.jpeg,.png"
             multiple={false}
@@ -105,10 +117,7 @@ const MyPostWidget = ({ picturePath }) => {
                   )}
                 </Box>
                 {image && (
-                  <IconButton
-                    onClick={() => setImage(null)}
-                    sx={{ width: "15%" }}
-                  >
+                  <IconButton onClick={() => setImage(null)} sx={{ width: "15%" }}>
                     <DeleteOutlined />
                   </IconButton>
                 )}
